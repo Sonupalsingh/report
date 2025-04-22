@@ -1,0 +1,46 @@
+{% for host in ansible_play_hosts %}
+
+################################################################
+Host: {{ host }}
+-------------------------
+Date & Time: {{ hostvars[host]['ansible_date_time']['date'] }} {{ hostvars[host]['ansible_date_time']['time'] }}
+Distribution Version: {{ hostvars[host]['ansible_distribution'] }} {{ hostvars[host]['ansible_distribution_version'] }}
+
+IP Address: {% if hostvars[host]['ansible_all_ipv4_addresses'] | length > 0 %}
+{{ hostvars[host]['ansible_all_ipv4_addresses'][0] }}
+{% else %}
+N/A
+{% endif %}
+
+Hostname: {{ hostvars[host]['ansible_hostname'] }}
+
+Memory Usage:
+  Total: {{ hostvars[host]['ansible_memtotal_mb'] }} MB
+  Used: {{ hostvars[host]['ansible_memtotal_mb'] - hostvars[host]['ansible_memfree_mb'] }} MB
+  Free: {{ hostvars[host]['ansible_memfree_mb'] }} MB
+  Usage: {{ ((hostvars[host]['ansible_memtotal_mb'] - hostvars[host]['ansible_memfree_mb']) / hostvars[host]['ansible_memtotal_mb'] * 100) | round(2) }}%
+
+CPU Usage:
+  Usage: {% if hostvars[host]['cpu_usage_output'] is defined and hostvars[host]['cpu_usage_output']['stdout'] is defined %}
+{{ hostvars[host]['cpu_usage_output']['stdout'] }}%
+{% else %}
+N/A
+{% endif %}
+
+Sonu Check:
+  Usage: {% if hostvars[host]['memory_usage_output'] is defined and hostvars[host]['memory_usage_output']['stdout'] is defined %}
+{{ hostvars[host]['memory_usage_output']['stdout'] }}%
+{% else %}
+N/A
+{% endif %}
+
+Filesystem Utilization:
+{% if 'filesystem_details_output' in hostvars[host] and hostvars[host]['filesystem_details_output']['stdout_lines'] is defined %}
+{% for line in hostvars[host]['filesystem_details_output']['stdout_lines'] %}
+  {{ line }}
+{% endfor %}
+{% else %}
+  No filesystem details available.
+{% endif %}
+
+{% endfor %}
