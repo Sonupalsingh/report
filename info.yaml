@@ -1,0 +1,39 @@
+- name: Gather system details and store in a file
+  hosts: web
+  gather_facts: yes
+  tasks:
+
+    - name: Get CPU usage
+      shell: |
+        CPU_IDLE=$(top -bn1 | grep "Cpu(s)" | awk '{print $8}')
+        echo "100 - $CPU_IDLE" | bc
+      register: cpu_usage_output
+
+    - name: Get memory usage percentage
+      shell: "free | awk '/Mem:/ {printf \"%.2f\", ($3/$2)*100}'"
+      register: memory_usage_output
+
+    - name: Get filesystem details
+      shell: df -kh
+      register: filesystem_details_output
+
+    - name: Store system report in a file on Ansible server
+      delegate_to: localhost
+      run_once: true
+      template:
+        src: info.j2
+        dest: /tmp/system_details
+#
+#- name: Transfer system report to Windows system
+#  hosts: windows
+#  gather_facts: no
+#  tasks:
+#    - name: Wait to ensure file exists on Ansible control node
+#      pause:
+#        seconds: 5
+#
+#    - name: Transfer system report to Windows system
+#      fetch:
+#        src: /tmp/system_details
+#        dest: C:\Users\Indo\Desktop\auto\system_details.txt
+#        flat: yes
