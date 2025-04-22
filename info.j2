@@ -27,13 +27,6 @@ CPU Usage:
 N/A
 {% endif %}
 
-Sonu Check:
-  Usage: {% if hostvars[host]['memory_usage_output'] is defined and hostvars[host]['memory_usage_output']['stdout'] is defined %}
-{{ hostvars[host]['memory_usage_output']['stdout'] }}%
-{% else %}
-N/A
-{% endif %}
-
 Filesystem Utilization:
 {% if 'filesystem_details_output' in hostvars[host] and hostvars[host]['filesystem_details_output']['stdout_lines'] is defined %}
 {% for line in hostvars[host]['filesystem_details_output']['stdout_lines'] %}
