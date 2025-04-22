@@ -38,6 +38,9 @@ def extract_filesystem_details(filesystem_data):
 # Get the current date and time
 current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+# Create alignment object
+center_align = Alignment(horizontal="center", vertical="center")
+
 # Check if the Excel file exists, and create it if not
 if not os.path.exists(excel_file_path):
     wb = Workbook()
@@ -47,14 +50,15 @@ if not os.path.exists(excel_file_path):
     # Add the top headers (Date & Time)
     sheet.merge_cells("A1:H1")
     sheet["A1"] = current_datetime
-    sheet["A1"].alignment = Alignment(horizontal="center", vertical="center")
+    sheet["A1"].alignment = center_align
 
-    # Add **corrected** table headers starting in row 3
-    headers = ["S.No", "Host", "Hostname", "IP Address", "Filesystem Details",
+    # Add table headers starting in row 3
+    headers = ["S.No", "Host", "Hostnae", "IP Address", "Filesystem Details",
                "Memory Usage (%)", "CPU Usage (%)", "Report Date & Time"]
-    
+
     for col_num, header in enumerate(headers, start=1):
-        sheet.cell(row=3, column=col_num, value=header)
+        cell = sheet.cell(row=3, column=col_num, value=header)
+        cell.alignment = center_align
 
     wb.save(excel_file_path)
 
@@ -73,10 +77,12 @@ for merged_cell_range in merged_cells_copy:
 for row in sheet.iter_rows(min_row=4, max_row=sheet.max_row, max_col=sheet.max_column):
     for cell in row:
         cell.value = None
+        cell.alignment = center_align
 
 # Find the last used row to continue numbering
 start_row = 4
 
+# Write the data and apply alignment
 for i in range(len(hosts)):
     row = start_row + i
 
@@ -89,7 +95,11 @@ for i in range(len(hosts)):
     sheet[f'G{row}'] = cpu_usages[i] if i < len(cpu_usages) else ''
     sheet[f'H{row}'] = date_times[i] if i < len(date_times) else ''
 
+    # Apply alignment to each cell in the row
+    for col in range(1, 9):  # Columns A to H
+        sheet.cell(row=row, column=col).alignment = center_align
+
 # Save the updated workbook
 wb.save(excel_file_path)
 
-print(f"? Excel file updated successfully with properly aligned headers!")
+print("✅ Excel file updated successfully with properly aligned headers and data!")
