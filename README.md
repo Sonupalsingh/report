@@ -51,6 +51,9 @@ ansible-galaxy collection install ansible.windows:==1.9.0
 ansible-galaxy collection install /root/ansible-windows-1.9.0.tar.gz
 
 
+
+ansible-galaxy collection download ansible.windows:==1.9.0
+
 ansible windows -i /root/playbook/machine -m win_ping -vvv
 
 
