@@ -102,4 +102,6 @@ for i in range(len(hosts)):
 # Save the updated workbook
 wb.save(excel_file_path)
 
-print("✅ Excel file updated successfully with properly aligned headers and data!")
+# Changed this line to avoid encoding error on Windows console:
+print("Excel file updated successfully with properly aligned headers and data!")
+
