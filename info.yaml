@@ -23,17 +23,42 @@
       template:
         src: info.j2
         dest: /tmp/system_details
-#
-#- name: Transfer system report to Windows system
-#  hosts: windows
-#  gather_facts: no
-#  tasks:
-#    - name: Wait to ensure file exists on Ansible control node
-#      pause:
-#        seconds: 5
-#
-#    - name: Transfer system report to Windows system
-#      fetch:
-#        src: /tmp/system_details
-#        dest: C:\Users\Indo\Desktop\auto\system_details.txt
-#        flat: yes
+
+
+
+####################################################
+
+- name: Transfer system report to Windows system
+  hosts: windows
+  gather_facts: no
+  tasks:
+
+
+    - name: Ensure destination folder exists
+      win_file:
+        path: C:\\Users\\Indo\\Desktop\\auto
+        state: directory
+
+    - name: Copy system report to Windows
+      win_copy:
+        src: /tmp/system_details
+        dest: C:\\Users\\Indo\\Desktop\\auto\\system_details.txt
+
+    - name: Copy update_excel.py to Windows
+      win_copy:
+        src: /root/window/update_excel.py
+        dest: C:\\Users\\Indo\\Desktop\\auto\\update_excel.py
+
+    - name: Run update_excel.py on Windows
+      win_command: python C:\\Users\\Indo\\Desktop\\auto\\update_excel.py
+      register: run_output
+      failed_when: run_output.rc != 0
+      changed_when: false
+
+    - name: Show update_excel.py output
+      debug:
+        var: run_output.stdout_lines
+
+
+
+
